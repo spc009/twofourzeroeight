@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace twozerofoureight
 {
     class TwoZeroFourEightModel : Model
     {
+        public int score;
         protected int boardSize; // default is 4
         protected int[,] board;
         protected Random rand;
@@ -22,9 +24,11 @@ namespace twozerofoureight
             boardSize = size;
             board = new int[boardSize, boardSize];
             var range = Enumerable.Range(0, boardSize);
-            foreach(int i in range) {
-                foreach(int j in range) {
-                    board[i,j] = 0;
+            foreach (int i in range)
+            {
+                foreach (int j in range)
+                {
+                    board[i, j] = 0;
                 }
             }
             rand = new Random();
@@ -37,14 +41,56 @@ namespace twozerofoureight
             return board;
         }
 
+        private bool FullBoard()
+        {
+            
+            int[] buffer = new int[4];
+            int[] rangeX = Enumerable.Range(0, boardSize).ToArray();
+            int[] rangeY = Enumerable.Range(0, boardSize).ToArray();
+            foreach (int i in rangeX)
+            {
+                foreach (int j in rangeY)
+                {  
+                    if (board[i, j] == 0) return false;
+                    if (j > 0 && buffer[i] != 0 && buffer[i] == buffer[i - 1])
+                    
+                        return false;
+                }
+
+            }
+            GameOver();
+            return true;
+        }
+        private void GameOver()
+        {
+            bool over = true;
+            for(int i=0;i<3;i++)
+            {
+                for (int j=0; j<3; j++ )
+                {
+                    if (board[i, j] == board[i, j + 1]) over = false;
+                    if (board[j, i] == board[j+1, i]) over = false;
+                }
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                if (board[i, 3] == board[i + 1, 3]) over = false;
+                if (board[3, i] == board[3, i + 1]) over = false;
+            }
+            if (over) MessageBox.Show("GAME OVER " + score); 
+        }
+
         private int[,] Random(int[,] input)
         {
-            while (true)
+            while (!FullBoard())
             {
                 int x = rand.Next(boardSize);
                 int y = rand.Next(boardSize);
                 if (board[x, y] == 0)
                 {
+                    //int random = rand.Next(3) + 1;
+                    //double r = Math.Pow(Convert.ToDouble(2), Convert.ToDouble(random));
+                    //board[x, y] = Convert.ToInt16(r);
                     board[x, y] = 2;
                     break;
                 }
@@ -82,6 +128,7 @@ namespace twozerofoureight
                     if (j > 0 && buffer[j] != 0 && buffer[j] == buffer[j - 1])
                     {
                         buffer[j - 1] *= 2;
+                        score += buffer[j - 1];
                         buffer[j] = 0;
                     }
                 }
@@ -103,6 +150,7 @@ namespace twozerofoureight
             }
             board = Random(board);
             NotifyAll();
+
         }
 
         public void PerformUp()
@@ -134,6 +182,7 @@ namespace twozerofoureight
                     if (j > 0 && buffer[j] != 0 && buffer[j] == buffer[j - 1])
                     {
                         buffer[j - 1] *= 2;
+                        score += buffer[j - 1];
                         buffer[j] = 0;
                     }
                 }
@@ -188,6 +237,7 @@ namespace twozerofoureight
                     if (j > 0 && buffer[j] != 0 && buffer[j] == buffer[j - 1])
                     {
                         buffer[j - 1] *= 2;
+                        score += buffer[j - 1];
                         buffer[j] = 0;
                     }
                 }
@@ -239,6 +289,7 @@ namespace twozerofoureight
                     if (j > 0 && buffer[j] != 0 && buffer[j] == buffer[j - 1])
                     {
                         buffer[j - 1] *= 2;
+                        score += buffer[j - 1];
                         buffer[j] = 0;
                     }
                 }
@@ -262,3 +313,4 @@ namespace twozerofoureight
         }
     }
 }
+
